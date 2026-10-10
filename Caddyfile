@@ -1,0 +1,15 @@
+# TRACE4D TLS proksi (DM-04, DM-07). Domen .env dagi YEROSTI_DOMEN dan.
+# Ochiq internetda — sertifikat avtomatik (ACME). Yopiq data markazda: `tls internal` yoki
+# `tls /sertifikat/yerosti.crt /sertifikat/yerosti.key` (sertifikat papkasini proksi xizmatiga ulang) — JOYLASH.md.
+{$YEROSTI_DOMEN} {
+	encode zstd gzip
+	# skan bo'lagi 4 MB, loyiha DXF ≤ 10 MB (server o'zi ham tekshiradi) — zaxira bilan 12 MB
+	request_body {
+		max_size 12MB
+	}
+	header Strict-Transport-Security "max-age=31536000; includeSubDomains"
+	reverse_proxy server:8342 {
+		# mijoz yuborgan X-Real-IP har doim almashtiriladi — server unga faqat shu proksidan ishonadi
+		header_up X-Real-IP {remote_host}
+	}
+}

@@ -1,0 +1,79 @@
+# YEROSTI data markaz (DM-04). Bitta buyruq:  cp .env.example .env  →  (tahrirlang)  →  docker compose up -d --build
+# Xizmatlar: server (API + veb), ishchi (DM-02 qayta hisob), zaxira (DM-05), proksi (TLS, Caddy).
+# Doimiy ma'lumot: `malumot` hajmi (baza + skanlar + tahlil natijalari), zaxiralar — hostdagi papka.
+name: yerosti
+
+x-yerosti: &yerosti
+  image: yerosti:1.2
+  restart: unless-stopped
+  env_file: .env
+  volumes:
+    - malumot:/malumot
+
+services:
+  server:
+    <<: *yerosti
+    build: .
+    environment:
+      # X-Real-IP ga FAQAT proksi manzilidan ishoniladi (kirish cheklovi har mijozga alohida)
+      YEROSTI_PROKSI_TARMOQ: 172.29.10.2/32
+    expose: ["8342"]
+    networks:
+      ichki:
+        ipv4_address: 172.29.10.3
+
+  ishchi:
+    <<: *yerosti
+    command: ["python3", "-u", "yerosti_ishchi.py"]
+    networks: [ichki]
+    depends_on:
+      server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import os,sys,time; sys.exit(0 if time.time() - os.path.getmtime('/malumot/skanlar/.ishchi_yurak') < 90 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  zaxira:
+    <<: *yerosti
+    command: ["python3", "-u", "zaxira.py", "davriy", "--papka", "/zaxira"]
+    volumes:
+      - malumot:/malumot
+      - ${YEROSTI_ZAXIRA_PAPKA:-./zaxira}:/zaxira
+    networks: [ichki]
+    depends_on:
+      server:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+
+  proksi:
+    image: caddy:2
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_malumot:/data
+      - caddy_sozlama:/config
+    networks:
+      ichki:
+        ipv4_address: 172.29.10.2
+    depends_on:
+      server:
+        condition: service_healthy
+
+volumes:
+  malumot:
+  caddy_malumot:
+  caddy_sozlama:
+
+networks:
+  ichki:
+    ipam:
+      config:
+        - subnet: 172.29.10.0/24

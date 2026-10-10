@@ -1,0 +1,72 @@
+# TRACE4D — umumiy server SERVER_IP: trace4d.example.uz (portal) va trace4dapi.example.uz (API). Qo'llanma: JOYLASHUV.md
+#   cd /opt/trace4d && docker compose -f ornatish/server/docker-compose.server.yml up -d --build
+# Tashqariga PORT OCHILMAYDI: faqat caddy trace4d_ichki tarmog'i orqali kiradi (boshqa loyihalar TRACE4D ni ko'rmaydi).
+name: trace4d   # QO'LDA: papka nomi bo'yicha boshqa loyihaga qo'shilib ketmasin
+
+x-jurnal: &jurnal
+  driver: json-file
+  options: { max-size: "10m", max-file: "3" }
+
+x-trace4d: &trace4d
+  image: trace4d:1.2
+  restart: unless-stopped
+  env_file:
+    - /etc/trace4d/trace4d.env     # manzil, birinchi admin paroli (root 600; yangilash.sh faqat birinchi marta yozadi)
+    - /etc/trace4d/tarmoq.env      # YEROSTI_PROKSI_TARMOQ = trace4d_ichki pastki tarmog'i (yangilash.sh har safar yozadi)
+  environment:
+    HOME: /tmp                     # ildiz fayl tizimi faqat o'qish uchun
+  volumes:
+    - malumot:/malumot
+  networks: [ichki]
+  read_only: true
+  tmpfs: [/tmp]
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  logging: *jurnal
+
+services:
+  trace4d:                         # API + portal + 3D; Caddy shu nom bilan murojaat qiladi («server» emas — boshqa loyihalarda ham bor)
+    <<: *trace4d
+    build: { context: ../.., dockerfile: Dockerfile }
+    container_name: trace4d
+    mem_limit: 768m
+    cpus: 1.5
+
+  trace4d-ishchi:                  # DM-02: muhrlangan skanni Swift yadrosida qayta hisoblaydi
+    <<: *trace4d
+    container_name: trace4d-ishchi
+    pull_policy: never             # tasvirni trace4d xizmati yig'adi — Docker Hub dan qidirilmasin
+    command: ["python3", "-u", "yerosti_ishchi.py"]
+    depends_on:
+      trace4d: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import os,sys,time; sys.exit(0 if time.time() - os.path.getmtime('/malumot/skanlar/.ishchi_yurak') < 90 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    mem_limit: 2g
+    cpus: 2
+
+  trace4d-zaxira:                  # DM-05: har 24 soatda baza + skanlar + SHA-256 manifest, 14 ta saqlanadi
+    <<: *trace4d
+    container_name: trace4d-zaxira
+    pull_policy: never             # tasvirni trace4d xizmati yig'adi — Docker Hub dan qidirilmasin
+    command: ["python3", "-u", "zaxira.py", "davriy", "--papka", "/zaxira"]
+    volumes:
+      - malumot:/malumot
+      - /var/backups/trace4d:/zaxira
+    depends_on:
+      trace4d: { condition: service_healthy }
+    healthcheck:
+      disable: true
+    mem_limit: 512m
+    cpus: 1
+
+networks:
+  ichki:
+    name: trace4d_ichki
+    external: true                 # yangilash.sh yaratadi; caddy unga alohida ulanadi (qorovul tiklaydi)
+
+volumes:
+  malumot:
+    name: trace4d_malumot          # baza + skanlar + hujjatlar: tasvir yangilanganda yo'qolmaydi

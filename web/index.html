@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TRACE4D Cloud — yer osti kommunikatsiyalari</title>
+<link rel="stylesheet" href="/static/vendor/maplibre-gl.css">
+<link rel="icon" href="/static/belgi.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/static/tokenlar.css">
+<link rel="stylesheet" href="/static/shrift.css">
+<link rel="stylesheet" href="/static/uslub.css">
+</head>
+<body>
+
+<!-- Ikonkalar: o'zimizniki, 24×24, chiziqli (DZ-04). NN/g: ikonka yonida ko'rinadigan yorliq bo'ladi. -->
+<svg class="yashirin" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <symbol id="i-obyekt" viewBox="0 0 24 24"><rect x="4" y="4.5" width="16" height="4.5" rx="1.3"/><rect x="4" y="11" width="16" height="4.5" rx="1.3"/><rect x="4" y="17.5" width="10" height="4" rx="1.3"/></symbol>
+  <symbol id="i-qatlam" viewBox="0 0 24 24"><path d="M12 3.5 3 8.5l9 5 9-5-9-5z"/><path d="M3 13.5l9 5 9-5"/></symbol>
+  <symbol id="i-qazish" viewBox="0 0 24 24"><path d="M12 3.5 2.8 20h18.4L12 3.5z"/><path d="M12 9.5v4.5"/><circle cx="12" cy="16.8" r=".7" fill="currentColor"/></symbol>
+  <symbol id="i-tizim" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-kompas" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 5.5l2.6 6.5h-5.2z" fill="currentColor" stroke="none"/><path d="M14.6 12 12 18.5 9.4 12"/></symbol>
+  <symbol id="i-hammasi" viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></symbol>
+  <symbol id="i-masofa" viewBox="0 0 24 24"><rect x="2.5" y="8" width="19" height="8" rx="1.5"/><path d="M6.5 8v3M10 8v4.5M13.5 8v3M17 8v4.5"/></symbol>
+  <symbol id="i-asos" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></symbol>
+  <symbol id="i-qamrov" viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="13" rx="1.5" stroke-dasharray="3 2.2"/><path d="M8 15l3-4 2.5 3 1.8-2.2L17.5 15z"/></symbol>
+  <symbol id="i-qidiruv" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></symbol>
+  <symbol id="i-yop" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-orqaga" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="i-tekshir" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+  <symbol id="i-qurilma" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></symbol>
+  <symbol id="i-chiqish" viewBox="0 0 24 24"><path d="M10 4H5v16h5"/><path d="M14 8l4 4-4 4M18 12H9"/></symbol>
+  <symbol id="i-xarita" viewBox="0 0 24 24"><path d="M12 21s6-5.3 6-11a6 6 0 0 0-12 0c0 5.7 6 11 6 11z"/><circle cx="12" cy="10" r="2.2"/></symbol>
+  <symbol id="i-tarix" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
+  <symbol id="i-chop" viewBox="0 0 24 24"><path d="M7 8V3h10v5M5 8h14a2 2 0 0 1 2 2v6h-4v4H7v-4H3v-6a2 2 0 0 1 2-2z"/></symbol>
+  <symbol id="i-pdf" viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></symbol>
+  <symbol id="i-tozala" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></symbol>
+</svg>
+
+<div id="kirish-qatlam" class="yashirin">
+  <form id="kirish-forma" autocomplete="off">
+    <div class="kirish-brend">
+      <img src="/static/belgi.svg" alt="" width="44" height="44">
+      <div><b>TRACE<em>4D</em></b><small>Yer osti kommunikatsiyalari raqamli egizagi</small></div>
+    </div>
+    <label>Login<input id="kirish-login" type="text" required maxlength="64" autocomplete="username"></label>
+    <label>Parol<input id="kirish-parol" type="password" required maxlength="128" autocomplete="current-password"></label>
+    <div id="kirish-xato" class="xato-matn yashirin" role="alert"></div>
+    <button type="submit" class="tugma-asosiy tugma-katta">Kirish</button>
+    <p class="kirish-past">Faqat ro'yxatdan o'tgan xodimlar. Har kirish jurnalga yoziladi.</p>
+  </form>
+</div>
+
+<div id="ilova" class="yashirin">
+  <nav id="rail" aria-label="Bo'limlar">
+    <a class="rail-brend" href="/" title="TRACE4D Cloud"><img src="/static/belgi.svg" alt="" width="30" height="30"><span>TRACE<em>4D</em></span></a>
+    <div class="rail-royxat">
+      <button type="button" class="rail-tugma" data-bolim="obyektlar" aria-pressed="true"><svg class="ikon"><use href="#i-obyekt"/></svg><span>Obyektlar</span></button>
+      <button type="button" class="rail-tugma" data-bolim="qatlamlar" aria-pressed="false"><svg class="ikon"><use href="#i-qatlam"/></svg><span>Qatlamlar</span></button>
+      <button type="button" class="rail-tugma" data-bolim="qazish" aria-pressed="false"><svg class="ikon"><use href="#i-qazish"/></svg><span>Qazish</span></button>
+      <button type="button" class="rail-tugma" data-bolim="tizim" aria-pressed="false"><svg class="ikon"><use href="#i-tizim"/></svg><span>Tizim</span></button>
+    </div>
+    <button type="button" class="rail-hisob" id="hisob-tugma" aria-haspopup="menu" aria-expanded="false"><b id="foydalanuvchi-harf"></b><span id="foydalanuvchi-rol"></span></button>
+  </nav>
+
+  <main id="asosiy" class="tortma-ochiq">
+    <div id="xarita"></div>
+
+    <aside id="tortma" class="shisha" aria-label="Bo'lim paneli">
+      <div class="tortma-bosh">
+        <h2 id="tortma-sarlavha">Obyektlar</h2>
+        <button type="button" class="ikon-tugma" id="tortma-yop" aria-label="Panelni yopish"><svg class="ikon"><use href="#i-yop"/></svg></button>
+      </div>
+
+      <section id="bolim-obyektlar" class="tortma-tana">
+        <label class="qidiruv-boks"><svg class="ikon"><use href="#i-qidiruv"/></svg><input id="qidiruv" type="search" placeholder="Obyekt, pudratchi, order raqami" maxlength="100" aria-label="Qidiruv"><kbd>Ctrl K</kbd></label>
+        <div id="xulosa" class="xulosa" aria-label="Umumiy ko'rsatkichlar"></div>
+        <div id="obyekt-royxat" class="royxat"></div>
+        <button id="yangi-obyekt" type="button" class="tugma-asosiy tugma-keng"><svg class="ikon"><use href="#i-plus"/></svg>Yangi obyekt</button>
+      </section>
+
+      <section id="bolim-qatlamlar" class="tortma-tana yashirin">
+        <h3 class="bolim-nomi">Tarmoqlar <span id="tarmoq-km" class="son"></span></h3>
+        <div id="tarmoq-royxat" class="qatlamlar"></div>
+        <h3 class="bolim-nomi">Nuqta sifati</h3>
+        <div id="sifat-royxat" class="qatlamlar"></div>
+        <h3 class="bolim-nomi">Xarita asosi</h3>
+        <div id="asos-tanlov" class="segment" role="group" aria-label="Xarita asosi"></div>
+        <label class="qator-sozlama yashirin" id="asos-shaffof-q">Shaffoflik<input type="range" id="asos-shaffof" min="0.2" max="1" step="0.05" value="1"></label>
+        <p class="izoh yashirin" id="asos-izoh"></p>
+      </section>
+
+      <section id="bolim-qazish" class="tortma-tana yashirin">
+        <p class="izoh" id="order-korsatma">Xaritada qazish zonasi burchaklarini bosib belgilang (kamida 3 nuqta), so'ng «Tekshirish»ni bosing. Natija bazadagi tarmoqlar bo'yicha.</p>
+        <div class="tugmalar">
+          <button id="order-tekshir" type="button" class="tugma-asosiy" disabled><svg class="ikon"><use href="#i-tekshir"/></svg>Tekshirish</button>
+          <button id="order-tozala" type="button" class="tugma-oddiy"><svg class="ikon"><use href="#i-tozala"/></svg>Tozalash</button>
+        </div>
+        <div id="order-natija"></div>
+        <button id="order-chop" type="button" class="tugma-oddiy yashirin"><svg class="ikon"><use href="#i-chop"/></svg>Chop etish</button>
+      </section>
+
+      <section id="bolim-tizim" class="tortma-tana yashirin">
+        <button id="sifat-qoidasi" type="button" class="royxat-tugma"><svg class="ikon"><use href="#i-tekshir"/></svg><span>Sifat qoidasi (T-103)<small>RASMIY nuqta shartlari</small></span></button>
+        <button id="dala-qurilmalar" type="button" class="royxat-tugma yashirin"><svg class="ikon"><use href="#i-qurilma"/></svg><span>Dala qurilmalari<small>iPhone tokenlari</small></span></button>
+        <p class="izoh" id="tizim-malumot"></p>
+        <button id="chiqish" type="button" class="royxat-tugma xavf"><svg class="ikon"><use href="#i-chiqish"/></svg><span>Chiqish</span></button>
+      </section>
+    </aside>
+
+    <aside id="inspektor" class="shisha yashirin" aria-label="Tafsilot paneli"></aside>
+
+    <div id="asboblar" class="shisha" role="toolbar" aria-label="Xarita asboblari">
+      <button type="button" class="asbob" data-asbob="yaqin" title="Yaqinlashtirish" aria-label="Yaqinlashtirish"><svg class="ikon"><use href="#i-plus"/></svg></button>
+      <button type="button" class="asbob" data-asbob="uzoq" title="Uzoqlashtirish" aria-label="Uzoqlashtirish"><svg class="ikon"><use href="#i-minus"/></svg></button>
+      <button type="button" class="asbob" data-asbob="shimol" title="Shimolga burish" aria-label="Shimolga burish"><svg class="ikon"><use href="#i-kompas"/></svg></button>
+      <i class="asbob-ajrat"></i>
+      <button type="button" class="asbob asbob-yorliqli" data-asbob="hammasi" title="Barcha tarmoqlarni ko'rsatish"><svg class="ikon"><use href="#i-hammasi"/></svg><span>Hammasi</span></button>
+      <button type="button" class="asbob asbob-yorliqli" data-asbob="masofa" aria-pressed="false" title="Ikki nuqta orasidagi masofa va azimut"><svg class="ikon"><use href="#i-masofa"/></svg><span>Masofa</span></button>
+      <button type="button" class="asbob asbob-yorliqli" data-asbob="asos" title="Xarita asosini almashtirish"><svg class="ikon"><use href="#i-asos"/></svg><span>Asos</span></button>
+      <button type="button" class="asbob asbob-yorliqli yashirin" data-asbob="qamrov" title="Ortofoto qamroviga o'tish"><svg class="ikon"><use href="#i-qamrov"/></svg><span>Qamrov</span></button>
+    </div>
+
+    <div id="pastki">
+      <div id="masofa-natija" class="shisha chip chip-masofa yashirin" aria-live="polite"></div>
+      <div id="asos-chip" class="shisha chip yashirin"></div>
+      <div id="koordinata" class="shisha chip koordinata" aria-hidden="true"></div>
+    </div>
+
+    <div id="bosh-holat" class="yashirin">
+      <div class="bosh-karta shisha">
+        <div class="bosh-sarlavha">Hali o'lchov yo'q</div>
+        <p>Baza bo'sh. Birinchi obyektni yarating yoki iPhone dala ilovasi orqali o'lchov yuboring — xarita o'zi to'ladi.</p>
+        <div class="tugmalar">
+          <button id="bosh-yangi-obyekt" type="button" class="tugma-asosiy">Yangi obyekt</button>
+          <button id="bosh-dala" type="button" class="tugma-oddiy yashirin">Dala qurilmasi qo'shish</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="hisob-menyu" class="shisha yashirin" role="menu">
+  <div class="hisob-ism"><b id="hisob-ism"></b><span id="hisob-rol"></span></div>
+  <button type="button" class="royxat-tugma xavf" id="hisob-chiqish" role="menuitem"><svg class="ikon"><use href="#i-chiqish"/></svg><span>Chiqish</span></button>
+</div>
+
+<div id="modal-fon" class="yashirin">
+  <div id="modal" role="dialog" aria-modal="true"></div>
+</div>
+
+<script src="/static/vendor/maplibre-gl-csp.js"></script>
+<script src="/static/portal.js"></script>
+</body>
+</html>

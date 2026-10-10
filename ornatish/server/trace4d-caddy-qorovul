@@ -1,0 +1,84 @@
+#!/bin/bash
+# TRACE4D — Caddy bloki va tarmoq ulanishining qorovuli (har 5 daqiqa, systemd taymeri; yangilash.sh ham chaqiradi).
+#
+# Umumiy Caddyfile ni bir necha loyiha tahrirlaydi, caddy qayta yaratilsa `docker network connect`
+# bilan qo'shilgan tarmoqlar yo'qoladi. Qorovul faqat shu ikki holatni tiklaydi va FAQAT o'z blokiga tegadi:
+#  · m17 va rasta qorovullari bilan BIR XIL qulf — bir vaqtda faylni ikki jarayon yozmaydi;
+#  · fayl faqat joyida yoziladi (r+b), hech qachon mv/cp bilan almashtirilmaydi
+#    (Docker bog'lami inode'ga bog'langan — almashtirilsa konteyner eski faylda qolib ketadi);
+#  · blok «# >>> TRACE4D» … «# <<< TRACE4D» orasida; manbadan farq qilsa shu oraliq almashadi, yo'q bo'lsa oxiriga qo'shiladi;
+#  · tekshiruv caddy ichida (caddy validate), o'tmasa fayl joyida qaytariladi, reload qilinmaydi.
+set -u
+F=${TRACE4D_CADDYFILE:-/opt/caddy/Caddyfile}
+B=/opt/trace4d/ornatish/server/Caddyfile.trace4d
+[ -f "$F" ] && [ -f "$B" ] || exit 0
+docker inspect caddy >/dev/null 2>&1 || exit 0
+docker network inspect trace4d_ichki >/dev/null 2>&1 || exit 0     # TRACE4D o'chirilgan — tegmaymiz
+
+# 1) Tarmoq
+if ! docker inspect -f '{{json .NetworkSettings.Networks}}' caddy | grep -q '"trace4d_ichki"'; then
+  docker network connect trace4d_ichki caddy \
+    && logger -t trace4d-caddy "caddy trace4d_ichki tarmog'iga ulandi"
+fi
+
+# 2) Blok
+exec 9>/run/m17-caddy-qorovul.lock || exit 0
+flock -w 60 9 || exit 0
+Z="/root/Caddyfile.trace4d-qorovul-$(date +%Y%m%d-%H%M%S)"
+holat=$(python3 - "$F" "$B" "$Z" <<'PY'
+import sys
+yol, blok_yol, zaxira = sys.argv[1:4]
+asl = open(yol, "rb").read()
+blok = open(blok_yol, "rb").read().rstrip(b"\n") + b"\n"
+B0, B1 = b"# >>> TRACE4D", b"# <<< TRACE4D"
+qatorlar = asl.splitlines(keepends=True)
+bosh = [i for i, q in enumerate(qatorlar) if q.startswith(B0)]
+oxir = [i for i, q in enumerate(qatorlar) if q.startswith(B1)]
+if len(bosh) > 1 or len(oxir) > 1 or len(bosh) != len(oxir) or (bosh and oxir[0] < bosh[0]):
+    print("buzuq"); sys.exit(0)                  # belgilar buzilgan — qo'lda ko'rish kerak, tegmaymiz
+if bosh:
+    eski = b"".join(qatorlar[bosh[0]:oxir[0] + 1])
+    if eski == blok:
+        print("bir_xil"); sys.exit(0)
+    yangi = b"".join(qatorlar[:bosh[0]]) + blok + b"".join(qatorlar[oxir[0] + 1:])
+else:
+    # belgisiz qo'lda qo'shilgan blok bo'lsa ikkinchi marta qo'shmaymiz (Caddy butun sozlamani rad etadi)
+    if any(q.strip().startswith((b"trace4d.example.uz", b"trace4dapi.example.uz")) for q in qatorlar):
+        print("qolda"); sys.exit(0)
+    yangi = asl.rstrip(b"\n") + b"\n\n" + blok
+open(zaxira, "wb").write(asl)
+with open(yol, "r+b") as f:                       # joyida: inode saqlanadi
+    f.write(yangi); f.truncate()
+print("yozildi")
+PY
+)
+case "$holat" in
+  bir_xil) exit 0 ;;
+  buzuq) logger -t trace4d-caddy "XATO: TRACE4D belgilari Caddyfile da buzilgan — qo'lda tekshiring"; exit 1 ;;
+  qolda) logger -t trace4d-caddy "Belgisiz TRACE4D bloki bor — tegilmadi"; exit 0 ;;
+  yozildi) ;;
+  *) logger -t trace4d-caddy "XATO: blokni yozib bo'lmadi ($holat)"; exit 1 ;;
+esac
+
+qaytar() {
+  python3 - "$F" "$Z" <<'PY'
+import sys
+yol, zaxira = sys.argv[1], sys.argv[2]
+ma = open(zaxira, "rb").read()
+with open(yol, "r+b") as f:
+    f.write(ma); f.truncate()
+PY
+}
+if ! docker exec caddy caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null 2>&1; then
+  qaytar
+  logger -t trace4d-caddy "XATO: TRACE4D bloki bilan sozlama yaroqsiz — fayl qaytarildi, Caddy tegilmadi"
+  exit 1
+fi
+if docker exec caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile --force >/dev/null 2>&1; then
+  logger -t trace4d-caddy "TRACE4D bloki yozildi, Caddy qayta yuklandi"
+else
+  qaytar
+  docker exec caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile --force >/dev/null 2>&1
+  logger -t trace4d-caddy "XATO: reload yiqildi — fayl qaytarildi"
+  exit 1
+fi

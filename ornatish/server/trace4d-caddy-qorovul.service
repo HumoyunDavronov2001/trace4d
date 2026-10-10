@@ -1,0 +1,7 @@
+[Unit]
+Description=TRACE4D — Caddy bloki va tarmog'ini tekshirish/tiklash
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/trace4d-caddy-qorovul

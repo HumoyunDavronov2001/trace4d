@@ -1,0 +1,9 @@
+[Unit]
+Description=TRACE4D — Caddy qorovuli (har 5 daqiqa)
+
+[Timer]
+OnBootSec=4min
+OnUnitActiveSec=5min
+
+[Install]
+WantedBy=timers.target

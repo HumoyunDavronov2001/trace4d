@@ -1,0 +1,36 @@
+# >>> TRACE4D — trace4d.example.uz, trace4dapi.example.uz (manba: /opt/trace4d/ornatish/server/Caddyfile.trace4d)
+# Qorovul (/usr/local/sbin/trace4d-caddy-qorovul) blok yo'qolsa yoki manbadan farq qilsa joyida tiklaydi.
+# X-Real-IP ni Caddy O'ZI yozadi: mijoz yuborgani serverga yetmaydi (kirish cheklovi har mijozga alohida).
+trace4d.example.uz {
+	encode zstd gzip
+	request_body {
+		max_size 12MB
+	}
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
+	reverse_proxy trace4d:8342 {
+		header_up X-Real-IP {remote_host}
+	}
+}
+
+trace4dapi.example.uz {
+	encode zstd gzip
+	request_body {
+		max_size 12MB
+	}
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
+	handle /api/* {
+		reverse_proxy trace4d:8342 {
+			header_up X-Real-IP {remote_host}
+		}
+	}
+	handle {
+		redir https://trace4d.example.uz{uri} 302
+	}
+}
+# <<< TRACE4D

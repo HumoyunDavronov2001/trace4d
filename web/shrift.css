@@ -1,0 +1,5 @@
+/* YEROSTI shrifti — Noto Sans (SIL OFL 1.1), serverning o'zidan (DM-01). Manba: web/vendor/MANBA.md */
+@font-face{font-family:"Noto Sans";font-style:normal;font-weight:400;font-display:swap;src:url("/static/vendor/NotoSans-Regular.woff2") format("woff2")}
+@font-face{font-family:"Noto Sans";font-style:normal;font-weight:700;font-display:swap;src:url("/static/vendor/NotoSans-Bold.woff2") format("woff2")}
+@font-face{font-family:"Noto Sans";font-style:italic;font-weight:400;font-display:swap;src:url("/static/vendor/NotoSans-Italic.woff2") format("woff2")}
+@font-face{font-family:"Noto Sans Mono";font-style:normal;font-weight:400;font-display:swap;src:url("/static/vendor/NotoSansMono-Regular.woff2") format("woff2")}

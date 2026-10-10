@@ -1,0 +1,18 @@
+# Tasvirga faqat Dockerfile COPY qiladigan narsalar kerak; baza, parol, skan, sinov va yig'ish qoldiqlari tushmasin
+Yadro/.build
+**/__pycache__
+sinov/*
+!sinov/ijro_sinov.py
+!sinov/lokal_sinov.py
+!sinov/tasdiq_sinov.py
+!sinov/las_sinov.py
+skanlar
+zaxira
+dizayn
+taqdimot
+reja
+Ilova
+*.db
+*.db-*
+KIRISH_*.txt
+.env

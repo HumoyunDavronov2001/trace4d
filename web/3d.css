@@ -1,0 +1,109 @@
+/* YEROSTI 3D ko'ruvchi (DM-03) — to'q qobiq, ranglar tokenlar.css dan (DZ-01). */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--y-fon);color:var(--y-matn);font:14px/1.4 "Noto Sans","Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased}
+#sahna{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+#sahna.bosilgan{cursor:grabbing}
+#sahna.nishon-rejim{cursor:crosshair}
+.yashirin{display:none!important}
+.qobiq{position:fixed;background:color-mix(in srgb,var(--y-sirt) 90%,transparent);border:1px solid var(--y-chiziq);
+  border-radius:16px;backdrop-filter:blur(14px);box-shadow:0 10px 30px rgba(0,0,0,.35);z-index:3}
+.bosh{top:14px;left:14px;display:flex;align-items:center;gap:14px;padding:10px 16px;max-width:calc(100vw - 28px)}
+.brend{font-family:"Noto Sans","Segoe UI",sans-serif;font-weight:800;font-size:19px;letter-spacing:1px;color:var(--y-brend);text-decoration:none}
+.brend em{font-style:normal;color:var(--y-urgu)}
+.sarl{display:flex;flex-direction:column;min-width:0}
+.sarl b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sarl span{font-size:12.5px;color:var(--y-matn2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nishon{display:inline-flex;align-items:center;gap:6px;min-height:26px;padding:0 10px;border-radius:13px;font-weight:700;font-size:12.5px;white-space:nowrap}
+.nishon.ok{color:var(--y-rasmiy);background:var(--y-rasmiyFon)}
+.nishon.ogoh{color:var(--y-skanSifat);background:var(--y-skanFon)}
+.nishon.xato{color:var(--y-past);background:var(--y-pastFon)}
+.nishon.kul{color:var(--y-matn2);background:var(--y-sirt2)}
+#panel{top:84px;left:14px;width:300px;max-height:calc(100vh - 170px);overflow:auto;padding:6px 16px 14px}
+#panel section{padding:12px 0;border-bottom:1px solid var(--y-chiziq)}
+#panel section:last-child{border-bottom:0}
+#panel h2{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--y-matn2);margin-bottom:10px}
+.royxat{display:flex;flex-direction:column;gap:8px}
+.quvur{border:1px solid var(--y-chiziq);border-left:5px solid var(--y-urgu);border-radius:10px;padding:9px 11px;cursor:pointer;background:var(--y-sirt2)}
+.quvur:hover{border-color:var(--y-urgu)}
+.quvur b{font-size:14px}
+.quvur .m{display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;margin-top:6px;font-size:12.5px;color:var(--y-matn2)}
+.quvur .m span b{font-size:12.5px;color:var(--y-matn);font-variant-numeric:tabular-nums}
+.quvur .m .butun{grid-column:1/-1;margin-top:4px;padding-top:6px;border-top:1px solid var(--y-chiziq)}
+.quvur .m .butun.mos b{color:var(--y-rasmiy)}
+.quvur .m .butun.farq b{color:var(--y-skanSifat)}
+.bayroq{display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0;cursor:pointer}
+.bayroq input{accent-color:var(--y-urgu);width:16px;height:16px}
+.qator{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;padding:6px 0;color:var(--y-matn2)}
+select,input[type=range]{accent-color:var(--y-urgu)}
+select{background:var(--y-sirt2);color:var(--y-matn);border:1px solid var(--y-chiziq);border-radius:8px;padding:4px 6px;font:inherit;font-size:13px}
+.shkala{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--y-matn2);margin-top:6px;font-variant-numeric:tabular-nums}
+.shkala i{flex:1;height:8px;border-radius:4px;background:linear-gradient(90deg,#273449,#0E7490,#34D399,#FBBF24,#CBD5E1)}
+.shkala i.farq-rang{background:linear-gradient(90deg,#0D9488,#7DCFC6,#C9CFD8,#F7B58C,#EA580C)}
+.tafsilot{font-size:12.5px;color:var(--y-matn2);display:flex;flex-direction:column;gap:6px}
+.tafsilot .q{display:flex;justify-content:space-between;gap:10px}
+.tafsilot .q b{color:var(--y-matn);font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+.tafsilot .sabab{color:var(--y-skanSifat);font-weight:600}
+#asboblar{left:50%;bottom:18px;transform:translateX(-50%);display:flex;align-items:center;gap:4px;padding:6px}
+#asboblar button{font:inherit;font-weight:600;font-size:13.5px;color:var(--y-matn);background:transparent;border:0;border-radius:11px;
+  padding:0 14px;height:40px;cursor:pointer;white-space:nowrap}
+#asboblar button:hover{background:var(--y-sirt2)}
+#asboblar button.faol{background:var(--y-tugma);color:#fff}
+#asboblar .ajrat{width:1px;height:24px;background:var(--y-chiziq);margin:0 4px}
+#oqish{right:14px;bottom:18px;padding:9px 13px;font:12.5px/1.45 "Noto Sans Mono","Cascadia Mono",Consolas,monospace;color:var(--y-matn2);white-space:pre}
+#kesim-panel{right:14px;top:14px;width:min(480px,calc(100vw - 28px));padding:10px 12px 12px}
+.kp-bosh{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.kp-bosh span{font-size:12.5px;color:var(--y-matn2);flex:1}
+.kp-bosh button{font-size:20px;line-height:1;background:none;border:0;color:var(--y-matn2);cursor:pointer;width:28px;height:28px;border-radius:8px}
+.kp-bosh button:hover{background:var(--y-sirt2);color:var(--y-matn)}
+#kesim-chizma{width:100%;height:300px;display:block;border-radius:10px;background:var(--y-fon)}
+#profil-panel{right:14px;bottom:84px;width:min(560px,calc(100vw - 28px));padding:10px 12px 12px}
+#profil-chizma{width:100%;height:230px;display:block;border-radius:10px;background:var(--y-fon)}
+.pjadval{display:grid;grid-template-columns:1.1fr 1fr 1fr 1fr;gap:4px 12px;margin-top:10px;font-size:12.5px;font-variant-numeric:tabular-nums;
+  max-height:132px;overflow:auto}
+.pjadval b{font-size:11.5px;color:var(--y-matn2);font-weight:700;text-align:right;position:sticky;top:0;background:var(--y-sirt)}
+.pjadval b:first-child,.pjadval span:nth-child(4n+1){text-align:left}
+.pjadval span{text-align:right}
+.klavish{display:flex;flex-wrap:wrap;gap:6px 10px;font-size:12px;color:var(--y-matn2)}
+kbd{display:inline-block;min-width:20px;text-align:center;padding:1px 5px;margin-right:3px;border-radius:5px;border:1px solid var(--y-chiziq);
+  background:var(--y-sirt2);color:var(--y-matn);font:600 11px/1.5 "Noto Sans Mono",monospace}
+#asboblar button.yoqilgan{color:var(--y-urgu)}
+#xabar{left:50%;top:50%;transform:translate(-50%,-50%);padding:20px 24px;max-width:420px;text-align:center;font-size:14px}
+#xabar a{color:var(--y-urgu);font-weight:600}
+#yorliqlar{position:fixed;inset:0;pointer-events:none;z-index:2}
+.yorliq{position:absolute;transform:translate(-50%,-130%);padding:4px 9px;border-radius:8px;background:rgba(10,15,20,.78);
+  color:#F2F5F8;font-size:12px;font-weight:700;white-space:nowrap;border:1px solid rgba(255,255,255,.12)}
+.yorliq.olchov{background:var(--y-tugma);border-color:transparent}
+.izoh-kul{font-size:12px;color:var(--y-matn3);margin-top:4px}
+.sana{border:1px solid var(--y-chiziq);border-radius:10px;padding:8px 10px;background:var(--y-sirt2);display:flex;flex-direction:column;gap:6px}
+.sana-bosh{display:flex;align-items:center;gap:8px;font-size:13px}
+.sana-bosh span:not(.nishon){color:var(--y-matn2);font-variant-numeric:tabular-nums}
+.sana-bosh .nishon{margin-left:auto;min-height:22px}
+.sana-tugma{display:flex;align-items:center;justify-content:space-between}
+.sana-tugma a{color:var(--y-urgu);font-weight:600;font-size:13px;text-decoration:none}
+.sana-natija{font-size:12.5px;color:var(--y-matn2);line-height:1.5}
+.sana-natija:empty{display:none}
+.izoh-qator{display:flex;gap:10px;align-items:flex-start;font-size:13px;cursor:pointer;padding:6px 8px;border-radius:8px}
+.izoh-qator:hover{background:var(--y-sirt2)}
+.izoh-qator>b{flex:none;width:22px;height:22px;border-radius:11px;background:var(--y-skanSifat);color:#fff;display:grid;place-items:center;font-size:12px}
+.izoh-qator small{display:block;color:var(--y-matn3);font-size:11.5px}
+.yorliq.izoh{background:#9A5500;border-color:transparent;white-space:normal;max-width:260px}
+#izoh-forma{width:290px;padding:12px;display:flex;flex-direction:column;gap:8px;z-index:5}
+#izoh-forma textarea{width:100%;resize:vertical;background:var(--y-sirt2);color:var(--y-matn);border:1px solid var(--y-chiziq);border-radius:10px;
+  padding:8px 10px;font:inherit;font-size:13.5px}
+#izoh-forma textarea:focus{outline:2px solid var(--y-urgu);outline-offset:1px}
+.izoh-xato{color:var(--y-past);font-size:12.5px}
+.izoh-xato:empty{display:none}
+.izoh-tugmalar{display:flex;justify-content:flex-end;gap:8px}
+.izoh-tugmalar button{font:inherit;font-weight:600;font-size:13px;height:34px;padding:0 14px;border-radius:9px;border:1px solid var(--y-chiziq);
+  background:transparent;color:var(--y-matn);cursor:pointer}
+.izoh-tugmalar button.asosiy{background:var(--y-tugma);border-color:transparent;color:#fff}
+@media (max-width:760px){
+  #panel{top:auto;bottom:80px;left:10px;right:10px;width:auto;max-height:38vh}
+  #oqish{display:none!important}
+  .bosh{left:10px;right:10px;top:10px}
+  #kesim-panel{top:70px;right:10px}
+  #profil-panel{bottom:140px;right:10px;left:10px;width:auto}
+  #asboblar{max-width:calc(100vw - 20px);overflow-x:auto}
+}

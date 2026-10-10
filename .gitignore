@@ -1,0 +1,12 @@
+Yadro/.build/
+.swiftpm/
+__pycache__/
+*.pyc
+*.db
+*.db-*
+.env
+skanlar/
+zaxira/
+KIRISH_*.txt
+sinov/toplam_xom/
+Ilova/.build/

@@ -1,0 +1,13 @@
+# Umumiy serverda ishga tushirish: TLS va domenni hostdagi MAVJUD Caddy beradi, YEROSTI ning o'z proksisi ishlamaydi.
+#   docker compose -f docker-compose.yml -f docker-compose.umumiy.yml up -d --build
+# Host Caddyfile ga JOYLASH.md 2a-bo'limidagi blokni qo'shing. `.env` da YEROSTI_TASHQI_URL=https://<domen> shart.
+# Bu fayl `docker compose config` bilan tekshirilmagan (ishlab chiqish mashinasida Docker yo'q) — serverda tekshiring.
+services:
+  proksi:
+    profiles: ["alohida"]          # faqat `--profile alohida` bilan ishga tushadi, ya'ni bu rejimda yo'q
+  server:
+    ports:
+      - "127.0.0.1:8342:8342"     # faqat hostning o'zi ko'radi; tashqariga Caddy chiqaradi
+    environment:
+      # host Caddy dan kelgan ulanish compose tarmog'ining shlyuzidan ko'rinadi — X-Real-IP ga faqat shundan ishoniladi
+      YEROSTI_PROKSI_TARMOQ: 172.29.10.1/32

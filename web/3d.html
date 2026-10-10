@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="uz" data-mavzu="toq">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TRACE4D View — 3D ko'ruvchi</title>
+<link rel="icon" href="/static/belgi.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/static/tokenlar.css">
+<link rel="stylesheet" href="/static/shrift.css">
+<link rel="stylesheet" href="/static/3d.css">
+</head>
+<body>
+<canvas id="sahna" aria-label="Skan nuqta buluti va quvurlar, 3D"></canvas>
+<div id="yorliqlar" aria-hidden="true"></div>
+
+<header class="qobiq bosh">
+  <a class="brend" href="/" title="Portalga qaytish">TRACE<em>4D</em></a>
+  <div class="sarl"><b id="sarlavha">3D ko'ruvchi</b><span id="izoh">Yuklanmoqda…</span></div>
+  <span id="xulosa" class="nishon yashirin"></span>
+</header>
+
+<aside id="panel" class="qobiq">
+  <section><h2>Quvurlar</h2><div id="quvurlar" class="royxat"></div></section>
+  <section>
+    <h2>Qatlamlar</h2>
+    <label class="bayroq"><input type="checkbox" id="k-bulut" checked> Nuqta buluti</label>
+    <label class="bayroq"><input type="checkbox" id="k-server" checked> Serverda qayta aniqlangan quvur</label>
+    <label class="bayroq"><input type="checkbox" id="k-telefon" checked> Telefon natijasi (punktir o'q)</label>
+    <label class="bayroq"><input type="checkbox" id="k-loyiha" checked> Loyiha DXF (binafsha punktir)</label>
+    <div id="loyiha-holat" class="izoh-kul"></div>
+    <label class="qator">Rang
+      <select id="k-rang"><option value="balandlik">Balandlik bo'yicha</option><option value="bir">Bir rang</option></select></label>
+    <label class="qator">Nuqta o'lchami <input type="range" id="k-olcham" min="0.5" max="3" step="0.1" value="1.2"></label>
+    <label class="bayroq"><input type="checkbox" id="k-edl" checked> EDL soya (chuqurlik idroki)</label>
+    <label class="bayroq yashirin" id="k-farq-q"><input type="checkbox" id="k-farq" checked> O'zgarish (M3C2) qatlami</label>
+    <div id="farq-shkala" class="shkala yashirin"><span id="farq-past"></span><i class="farq-rang"></i><span id="farq-yuqori"></span></div>
+    <div id="farq-izoh" class="izoh-kul yashirin"></div>
+    <div id="shkala" class="shkala"><span id="shkala-past"></span><i></i><span id="shkala-yuqori"></span></div>
+  </section>
+  <section><h2>Sanalar va taqqoslash</h2><div id="sanalar" class="royxat"><div class="tafsilot">Yuklanmoqda…</div></div></section>
+  <section><h2>Izohlar</h2><div id="izohlar" class="royxat"></div></section>
+  <section><h2>Mustaqil qayta hisob</h2><div id="tafsilot" class="tafsilot"></div></section>
+  <section><h2>Klavishlar</h2><div class="klavish">
+    <span><kbd>1</kbd> aylantirish</span><span><kbd>2</kbd> masofa</span><span><kbd>3</kbd> kesim</span>
+    <span id="klavish-izoh" class="yashirin"><kbd>4</kbd> izoh</span>
+    <span><kbd>P</kbd> profil</span><span><kbd>E</kbd> soya</span><span><kbd>T</kbd> yuqoridan</span>
+    <span><kbd>R</kbd> boshlang'ich</span><span><kbd>F</kbd> to'liq ekran</span><span><kbd>S</kbd> PNG</span>
+    <span><kbd>Esc</kbd> panellarni yopish</span></div></section>
+</aside>
+
+<nav id="asboblar" class="qobiq" aria-label="Asboblar">
+  <button type="button" data-asbob="aylan" class="faol" title="Sichqoncha: aylantirish, o'ng tugma yoki Shift — surish, g'ildirak — yaqinlashtirish">Aylantirish</button>
+  <button type="button" data-asbob="masofa" title="Ikki nuqtani bosing">Masofa</button>
+  <button type="button" data-asbob="kesim" title="Quvur yonidagi nuqtani bosing — quvurga tik kesim">Kesim</button>
+  <button type="button" data-asbob="izoh" id="izoh-asbob" class="yashirin" title="Nuqtani bosing — izoh yozing (4)">Izoh</button>
+  <span class="ajrat"></span>
+  <button type="button" id="profil-tugma" title="Bo'ylama profil (P)">Profil</button>
+  <span class="ajrat"></span>
+  <button type="button" id="yuqoridan" title="T">Yuqoridan</button>
+  <button type="button" id="qayta" title="R">Boshlang'ich</button>
+  <button type="button" id="rasm" title="Yorliqlar bilan PNG (S)">PNG</button>
+  <button type="button" id="toliq" title="To'liq ekran (F)">To'liq ekran</button>
+</nav>
+
+<div id="oqish" class="qobiq yashirin" aria-live="polite"></div>
+
+<section id="kesim-panel" class="qobiq yashirin" aria-label="Kesim profili">
+  <div class="kp-bosh"><b>Kesim</b><span id="kesim-izoh"></span><button type="button" id="kesim-yop" aria-label="Yopish">×</button></div>
+  <canvas id="kesim-chizma"></canvas>
+</section>
+
+<section id="profil-panel" class="qobiq yashirin" aria-label="Bo'ylama profil">
+  <div class="kp-bosh"><b>Bo'ylama profil</b><span id="profil-izoh"></span><button type="button" id="profil-yop" aria-label="Yopish">×</button></div>
+  <canvas id="profil-chizma"></canvas>
+  <div id="profil-jadval" class="pjadval"></div>
+</section>
+
+<form id="izoh-forma" class="qobiq yashirin" aria-label="Izoh qo'shish">
+  <textarea id="izoh-matn" maxlength="1000" rows="3" placeholder="Izoh: masalan, mufta joyi, shikast, qayta tekshirilsin"></textarea>
+  <div id="izoh-xato" class="izoh-xato"></div>
+  <div class="izoh-tugmalar"><button type="button" id="izoh-bekor">Bekor</button><button type="submit" class="asosiy">Saqlash</button></div>
+</form>
+
+<div id="xabar" class="qobiq yashirin" role="alert"></div>
+<script src="/static/3d.js"></script>
+</body>
+</html>

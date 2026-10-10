@@ -1,0 +1,5 @@
+version: 1
+bundleID: uz.trace4d.scan
+product: YerostiDala
+infoPath: Info.plist
+iconPath: Resources/AppIcon.png
